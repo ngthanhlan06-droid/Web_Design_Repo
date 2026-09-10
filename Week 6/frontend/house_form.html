@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f5f7" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Maison | Find your home's value</title>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="nav" aria-label="Main navigation">
+        <div class="wordmark"><span class="mark" aria-hidden="true"></span>Maison</div>
+      </nav>
+
+      <section class="hero">
+        <section class="panel">
+          <div class="form-wrap">
+            <p class="panel-label">Begin here</p>
+            <form id="prediction-form">
+              <div class="field-row">
+                <label for="area">
+                  Living area
+                  <input id="area" name="area" type="number" min="1" step="0.1" placeholder="80" required />
+                </label>
+                <label for="bedrooms">
+                  Bedrooms
+                  <input id="bedrooms" name="bedrooms" type="number" min="0" step="1" placeholder="3" required />
+                </label>
+              </div>
+              <label for="location">
+                Location
+                <select id="location" name="location">
+                  <option value="other">Other location</option>
+                  <option value="hanoi">Hanoi</option>
+                  <option value="hcmc">Ho Chi Minh City</option>
+                </select>
+              </label>
+              <button id="submit-button" type="submit">
+                <span>Predict</span>
+                <span class="arrow" aria-hidden="true">&#8594;</span>
+              </button>
+            </form>
+
+            <div id="result" class="result" aria-live="polite">
+              <div class="result-label">Estimated market value</div>
+              <p id="result-price" class="result-price"></p>
+              <p id="result-meta" class="result-meta"></p>
+            </div>
+            <p id="error" class="error" role="alert"></p>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
