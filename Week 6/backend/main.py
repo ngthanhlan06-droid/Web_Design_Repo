@@ -1,12 +1,20 @@
-from fastapi import FastAPI, HTTPException, Query, status
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+import time
 
+from fastapi import Cookie, FastAPI, HTTPException, Query, Request, Response, status
+from pydantic import BaseModel, Field
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
 	title="Maison Price API & Extended Items API",
-	description="API upgrade for Week 7.",
+	description="API upgrade for Week 8.",
 	version="2.0.0",
+)
+app.add_middleware(
+	CORSMiddleware,
+	allow_origins=["http://127.0.0.1:5500"],
+	allow_credentials=True,
+	allow_methods=["*"],
+	allow_headers=["*"],
 )
 
 
@@ -221,4 +229,44 @@ def home() -> dict[str, str]:
 	return {"message": "Open /static/house_form.html to use Maison."}
 
 
-app.mount("/static", StaticFiles(directory="../frontend", html=True), name="static")
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+	start = time.perf_counter()
+	response = await call_next(request)
+	print(
+		f"{request.method} {request.url.path} -> "
+		f"{response.status_code} ({time.perf_counter() - start:.3f}s)"
+	)
+	return response
+
+
+class CartItem(BaseModel):
+	book: str
+
+
+@app.post("/cart/add")
+def add_to_cart(item: CartItem) -> dict[str, str]:
+	"""Process a cart addition without remembering it for the next request."""
+	return {"message": f"Added '{item.book}' to the cart"}
+
+
+@app.get("/cart")
+def get_cart() -> dict[str, str]:
+	"""A stateless request cannot identify or recover a previous cart."""
+	return {"message": "The server has no idea which cart belongs to this request"}
+
+
+@app.get("/visits")
+def count_visits(
+	response: Response,
+	visits: str | None = Cookie(default=None),
+) -> dict[str, int]:
+	count = int(visits) if visits else 0
+	count += 1
+	response.set_cookie(
+		key="visits",
+		value=str(count),
+		httponly=True,
+		samesite="lax",
+	)
+	return {"visits": count}
